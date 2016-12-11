@@ -22,10 +22,15 @@ function handleRequest(req, response) {
 		    .pipe(response);
 	    });
 	} else {
+
+
 		let url = 'https://r4---sn-oxunxg8pjvn-bpbs.googlevideo.com' + req.url;
-		console.log(url);
 
 		url = url.replace('id\/', 'id=');
+		url = url.replace('\/itag\/', '&itag=');
+		url = url.replace('\/source\/', '&source=');
+		url = url.replace('\/sq\/', '&sq=');
+		url = url.replace('\/file\/', '&file=');
 
 		console.log(url);
 
