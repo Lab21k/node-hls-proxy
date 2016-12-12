@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "replacestream": "^4.0.2",
-    "request": "^2.79.0"
+    "request": "^2.79.0",
+    "youtube-dl": "^1.11.1"
   }
 }
