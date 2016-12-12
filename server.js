@@ -8,14 +8,15 @@ const http = require('http'),
 
 //Lets define a port we want to listen to
 const PORT = process.env.PORT,
-        HOST = process.env.HOST;
+        HOST = process.env.HOST,
+        VIDEO_URL = process.env.VIDEO_URL;
 
 const videoRegex = /([^:\/\s]+)\/videoplayback\//g;
 
 let handlers = {};
 let hostname = '';
 
-youtubedl('https://www.youtube.com/watch?v=hh8Mofex_6o', [
+youtubedl(VIDEO_URL, [
     '-f 95',
     '-g'
 ]).on('info', (data) => {
@@ -26,6 +27,7 @@ youtubedl('https://www.youtube.com/watch?v=hh8Mofex_6o', [
     /* Configure multiple format HLS proxy */
     videoStreams.forEach(stream => {
         handlers[`/${stream.height}`] = (req, res) => {
+            res.setHeader('Content-Type', 'application/vnd.apple.mpegurl');
             https.get(stream.url, (_res) => {
                 _res.pipe(replaceStream(videoRegex, 'localhost/videoplayback?'))
                     .pipe(replaceStream('https', 'http'))
@@ -62,6 +64,8 @@ youtubedl('https://www.youtube.com/watch?v=hh8Mofex_6o', [
 });
 
 function requestHandler(req, res) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+
     if (req.url.indexOf('videoplayback') > -1) {
 
         let url = req.url;
@@ -81,7 +85,7 @@ function requestHandler(req, res) {
                 'Origin': 'https://www.youtube.com',
                 'Referer': 'https://www.youtube.com/',
                 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.98 Safari/537.36',
-                'accept': '*\/*'
+                'accept': '*/*'
             }
         }, data => {
             data.pipe(res);
